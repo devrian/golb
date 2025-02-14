@@ -1,0 +1,2 @@
+# golb
+Go libraries package
