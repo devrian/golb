@@ -2,10 +2,10 @@ package config
 
 import (
 	"encoding/json"
-	"golb/env"
 	"os"
 	"path/filepath"
 
+	"github.com/devrian/golb/env"
 	"gopkg.in/yaml.v2"
 )
 
