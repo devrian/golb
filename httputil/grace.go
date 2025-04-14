@@ -17,7 +17,7 @@ var (
 )
 
 func checkConfigTest() {
-	if cfgtestFlag == true {
+	if cfgtestFlag {
 		log.Println("config test mode, exiting")
 		os.Exit(0)
 	}

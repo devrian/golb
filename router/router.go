@@ -36,7 +36,7 @@ func GetHttpParam(ctx context.Context, name string) string {
 func New(o *Options) *HttpRouter {
 	router := &HttpRouter{
 		Options: o,
-		tracer:  otel.Tracer("router/myrouter"),
+		tracer:  otel.Tracer("router/httprouter"),
 	}
 	router.Httprouter = httprouter.New()
 	return router
