@@ -4,7 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/devrian/golb/monitor"
 	"github.com/devrian/golb/response"
+	"github.com/felixge/httpsnoop"
 	"github.com/julienschmidt/httprouter"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -23,7 +25,13 @@ type (
 		tracer         trace.Tracer
 	}
 
+	captureConfig struct {
+		captureHandler bool
+	}
+
 	httpParamsKey struct{}
+
+	captureHandlerKey struct{}
 
 	Handle func(*http.Request) *response.JSONResponse
 )
@@ -40,4 +48,17 @@ func New(o *Options) *HttpRouter {
 	}
 	router.Httprouter = httprouter.New()
 	return router
+}
+
+func (mr *HttpRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	captureConf := captureConfig{
+		captureHandler: true,
+	}
+	ctx := context.WithValue(r.Context(), captureHandlerKey{}, &captureConf)
+
+	m := httpsnoop.CaptureMetrics(mr.Httprouter, w, r.WithContext(ctx))
+
+	if captureConf.captureHandler {
+		monitor.FeedHTTPMetrics(m.Code, m.Duration, r.Header.Get("routePath"), r.Method)
+	}
 }
